@@ -1,14 +1,19 @@
 package com.example.task3a_medals
 
 import Olympian
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -62,6 +67,20 @@ class MainActivity : AppCompatActivity() {
 
         return resultList
     }
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.last_clicked, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_show_last_clicked -> {
+                startActivity(Intent(this, NewActivity::class.java))
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
 }
 
 
@@ -70,8 +89,25 @@ class OlympianAdapter(private val olympians: List<Olympian>) : RecyclerView.Adap
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val nameTextView: TextView = itemView.findViewById(R.id.nameTextView)
         val iconImageView: ImageView = itemView.findViewById(R.id.iconImageView)
+
+        init {
+            itemView.setOnClickListener {
+                val olympian = olympians[adapterPosition]
+                val toastMessage = "${olympian.name} won ${olympian.medalCount} medals"
+                Toast.makeText(itemView.context, toastMessage, Toast.LENGTH_SHORT).show()
+
+                // Saving to SharedPreferences
+                val sharedPref = itemView.context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+                with(sharedPref.edit()) {
+                    putString("last_clicked_name", olympian.name)
+                    putInt("last_clicked_medal_count", olympian.medalCount)
+                    apply()
+                }
+            }
+        }
     }
 
+    // This method is responsible for inflating the individual item layout and returning a new instance of ViewHolder.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_olympian, parent, false)
         return ViewHolder(view)
@@ -85,5 +121,24 @@ class OlympianAdapter(private val olympians: List<Olympian>) : RecyclerView.Adap
 
     override fun getItemCount() = olympians.size
 }
+
+
+
+class NewActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.last_clicked_layout)
+
+        val sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val name = sharedPref.getString("last_clicked_name", "N/A")
+        val medalCount = sharedPref.getInt("last_clicked_medal_count", -1)
+
+        // Assuming you have a TextView in activity_new.xml to display the info
+        val infoTextView: TextView = findViewById(R.id.infoTextView)
+        infoTextView.text = "$name won $medalCount medals"
+    }
+}
+
 
 
