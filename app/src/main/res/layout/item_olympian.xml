@@ -5,14 +5,12 @@
     android:orientation="horizontal"
     android:padding="8dp">
 
-    <!-- Image for the Olympian based on medals count -->
     <ImageView
         android:id="@+id/iconImageView"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:paddingEnd="8dp"/>
 
-    <!-- Name of the Olympian -->
     <TextView
         android:id="@+id/nameTextView"
         android:layout_width="0dp"
@@ -20,7 +18,6 @@
         android:layout_weight="1"
         android:textSize="16sp"/>
 
-    <!-- Medal count of the Olympian -->
     <TextView
         android:id="@+id/medalCountTextView"
         android:layout_width="wrap_content"

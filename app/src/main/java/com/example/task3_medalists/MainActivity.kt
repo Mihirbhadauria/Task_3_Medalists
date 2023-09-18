@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
 
         val olympiansList = dataList.map {
             val imageResId = when(it[1].toInt()) {
-                in 1..5 -> R.drawable.bronze_medal_icon
+                in 0..5 -> R.drawable.bronze_medal_icon
                 in 6..10 -> R.drawable.silver_medal_icon
                 else -> R.drawable.gold_medal_icon
             }
@@ -50,11 +50,12 @@ class MainActivity : AppCompatActivity() {
         val inputStream: InputStream = resources.openRawResource(resourceId)
         val reader = BufferedReader(InputStreamReader(inputStream))
 
-        // Skip the header row
+        // Skip the header row of data
         reader.readLine()
 
         reader.forEachLine { line ->
             val row = line.split(",").toTypedArray()
+            // getting necessary data which is country and total medals
             val selectedColumns = arrayOf(row[0], row[3])
             resultList.add(selectedColumns)
         }
@@ -107,7 +108,6 @@ class OlympianAdapter(private val olympians: List<Olympian>) : RecyclerView.Adap
         }
     }
 
-    // This method is responsible for inflating the individual item layout and returning a new instance of ViewHolder.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_olympian, parent, false)
         return ViewHolder(view)
@@ -134,7 +134,6 @@ class NewActivity : AppCompatActivity() {
         val name = sharedPref.getString("last_clicked_name", "N/A")
         val medalCount = sharedPref.getInt("last_clicked_medal_count", -1)
 
-        // Assuming you have a TextView in activity_new.xml to display the info
         val infoTextView: TextView = findViewById(R.id.infoTextView)
         infoTextView.text = "$name won $medalCount medals"
     }
